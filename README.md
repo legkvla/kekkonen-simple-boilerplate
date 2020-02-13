@@ -25,6 +25,4 @@ java -server -jar target/jess.jar
 openssl rand -base64 1024
 ```
 
-## License
-
 Copyright © 2020
