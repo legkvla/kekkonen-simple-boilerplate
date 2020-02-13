@@ -17,6 +17,14 @@ lein uberjar
 java -server -jar target/jess.jar
 ```
 
+## How to
+
+### Generate random token
+
+```
+openssl rand -base64 1024
+```
+
 ## License
 
 Copyright © 2020
