@@ -38,15 +38,15 @@
   (success (swap! counter inc)))
 
 (defnk ^:command upload
-  "Upload a file to a server (admin access needed)"
-  {:interceptors [[upload/multipart-params]] :roles #{:master}}
+  "Upload a file to a server (master access needed)"
+  {:roles #{:master} :interceptors [[upload/multipart-params]]}
   [[:state file]
    [:request [:multipart-params upload :- upload/TempFileUpload]]]
   (reset! file upload)
   (success (dissoc upload :tempfile)))
 
 (defnk ^:query download
-  "Download the file from the server"
+  "Download the file from the server (master access needed)"
   {:roles #{:master}}
   [[:state file]]
   (let [{:keys [tempfile content-type filename]} @file]
