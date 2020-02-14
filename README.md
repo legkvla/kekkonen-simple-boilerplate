@@ -24,7 +24,7 @@ java -server -jar target/jess.jar
 heroku apps:create
 git push heroku
 heroku config:set MASTER_TOKEN="`openssl rand -base64 1024 | tr -d '\n '; echo`"
-heroku config:set USER_TOKEN="`openssl rand -base64 256 | tr -d '\n '; echo`"
+heroku config:set USER_TOKEN="`openssl rand -base64 1024 | tr -d '\n '; echo`"
 ```
 
 ## How to
