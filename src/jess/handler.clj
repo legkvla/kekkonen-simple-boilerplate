@@ -3,6 +3,7 @@
             [kekkonen.cqrs :refer :all]
             [kekkonen.upload :as upload]
             [schema.core :as s]
+            [jess.logging :as logging]
             [jess.security :as security]))
 
 (s/defschema Pizza
@@ -68,4 +69,4 @@
                        :file [#'upload #'download]}
             :context system
             :meta {:roles security/require-roles}}
-     :ring {:interceptors [security/api-key-authenticator]}}))
+     :ring {:interceptors [security/api-key-authenticator logging/request-logging]}}))
