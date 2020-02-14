@@ -2,7 +2,8 @@
   (:require [plumbing.core :refer [defnk]]
             [kekkonen.cqrs :refer :all]
             [kekkonen.upload :as upload]
-            [schema.core :as s]))
+            [schema.core :as s]
+            [jess.security :as security]))
 
 (s/defschema Pizza
   {:name s/Str
@@ -15,27 +16,30 @@
 ;;
 
 (defnk ^:query ping []
+  "Public method"
   (success {:ping "pong"}))
 
 (defnk ^:command echo-pizza
-  "Echoes a pizza"
-  {:responses {:default {:schema Pizza}}}
+  "Echoes a pizza (user access at least needed)"
+  {:roles #{:user :master} :responses {:default {:schema Pizza}}}
   [data :- Pizza]
   (success data))
 
 (defnk ^:query plus
-  "playing with data"
+  "playing with data (user access needed)"
+  {:roles #{:user :master}}
   [[:data x :- s/Int, y :- s/Int]]
   (success (+ x y)))
 
 (defnk ^:command inc!
-  "a stateful counter"
+  "a stateful counter (user access needed)"
+  {:roles #{:user :master}}
   [[:state counter]]
   (success (swap! counter inc)))
 
 (defnk ^:command upload
-  "Upload a file to a server"
-  {:interceptors [[upload/multipart-params]]}
+  "Upload a file to a server (admin access needed)"
+  {:interceptors [[upload/multipart-params]] :roles #{:master}}
   [[:state file]
    [:request [:multipart-params upload :- upload/TempFileUpload]]]
   (reset! file upload)
@@ -43,9 +47,10 @@
 
 (defnk ^:query download
   "Download the file from the server"
+  {:roles #{:master}}
   [[:state file]]
   (let [{:keys [tempfile content-type filename]} @file]
-  (upload/response tempfile content-type filename)))
+   (upload/response tempfile content-type filename)))
 
 ;;
 ;; Application
@@ -61,4 +66,6 @@
                        :math [#'inc! #'plus]
                        :ping #'ping
                        :file [#'upload #'download]}
-            :context system}}))
+            :context system
+            :meta {:roles security/require-roles}}
+     :ring {:interceptors [security/api-key-authenticator]}}))

@@ -6,6 +6,7 @@
                  [metosin/kekkonen "0.3.2"];0.5.2
                  [prismatic/schema "1.1.12"]
                  [environ "1.1.0"]]
+  :plugins [[lein-environ "1.1.0"]]
 
   :min-lein-version "2.0.0"
   :main jess.main
