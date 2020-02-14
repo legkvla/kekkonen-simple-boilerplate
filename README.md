@@ -7,6 +7,7 @@ Minimal template for Kekkonen.
 ### Run the application locally
 
 ```
+cp profiles-template.clj profiles.clj
 lein run
 ```
 
